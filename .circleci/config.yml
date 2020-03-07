@@ -45,7 +45,7 @@ jobs:
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin docker push $IMAGE_NAME:latest
 workflows:
-    build-and-test:
+    build-and-publish-image:
       jobs:
         - build-and-test:
         - build-image:
