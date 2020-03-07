@@ -4,7 +4,7 @@ executors:
     environment:
       IMAGE_NAME: wojciechbilicki/picby_api
     docker:
-      - image: circleci/buildpack-deps:stretch
+      - image: circleci/node:stretch
 orbs:
   node: circleci/node@1.1.6
 jobs:
