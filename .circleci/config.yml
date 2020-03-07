@@ -35,7 +35,7 @@ jobs:
     executor: docker-publisher
     steps:
       - attach_workspace:
-        at: /tmp/attach_workspace
+          at: /tmp/attach_workspace
       - setup_remote_docker
       - run:
           name: Load archived Docker image
@@ -47,7 +47,7 @@ jobs:
 workflows:
     build-and-publish-image:
       jobs:
-        - build-and-test:
+        - build-and-test
         - build-image:
             requires: 
               - build-and-test
