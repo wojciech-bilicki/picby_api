@@ -55,8 +55,8 @@ workflows:
               branches: 
                 only: master
         - publish-latest:
-          requires:
-            - build-image
-          filters:
-            branches:
-              only: master
+            requires:
+              - build-image
+            filters:
+              branches:
+                only: master
