@@ -45,6 +45,17 @@ jobs:
           command:  |
             echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
             docker push $IMAGE_NAME:latest
+  deploy:
+    executor: docker-publisher
+    steps:
+      - add_ssh_keys:
+          fingerprints: 
+            "0a:b1:05:fd:2d:2f:f0:7a:34:77:b9:7e:9d:77:8d:f7"
+      - run:
+          name: Deploy to Digital Ocean Dokku
+          command: |
+            ssh root@46.101.166.26 "docker pull wojciechbilicki/picby_api:latest && docker tag wojciechbilicki/picby_api:latest dokku/picby_api:latest && dokku tags:deploy picby_api latest"
+
 workflows:
     build-and-publish-image:
       jobs:
