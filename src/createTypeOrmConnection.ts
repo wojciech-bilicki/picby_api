@@ -8,9 +8,8 @@ export const createTypeormConn = async () => {
   return process.env.NODE_ENV === 'production' ?
     createConnection({
     ...options,
-    url: process.env.DATABASE_URL  ,
+    url: process.env.DATABASE_URL,
     name: "default" } as any) : 
-    createConnection({...options, name: "default"})
-  
+    createConnection({...options, name: "development"})
 }
 

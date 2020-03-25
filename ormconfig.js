@@ -1,6 +1,6 @@
 module.exports = [
   {
-    name: 'development',
+    name: 'default',
     type: 'postgres',
     database: 'picby_db',
     host: 'localhost',
