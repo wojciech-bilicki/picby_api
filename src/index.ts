@@ -1,6 +1,6 @@
 import { ApolloServer } from "apollo-server-express";
-import connectRedis from 'connect-redis';
-import cors from 'cors';
+import connectRedis from "connect-redis";
+import cors from "cors";
 import express from "express";
 import session from "express-session";
 import { createTypeormConn } from "./createTypeOrmConnection";
@@ -8,16 +8,13 @@ import { AUTH_COOKIE_NAME } from "./modules/constants/cookies";
 import { redis } from "./redis";
 import { createSchema } from "./utils/createSchema";
 
-
 const COOKIE_MAX_AGE_LIMIT = 1000 * 60 * 60 * 24 * 7 * 36; //7 years
 
 // TODO: we should find a way to store it secretly somewhere
 const AUTH_COOKIE_SECRET = "asdasda";
-const DEFAULT_PORT = 8081;
-
+const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
 
 (async () => {
-
   const app = express();
 
   await createTypeormConn();
@@ -29,16 +26,18 @@ const DEFAULT_PORT = 8081;
       req,
       res,
       /* url is used to serve the path to files */
-      url: req.protocol + "://" + req.get('host')
+      url: req.protocol + "://" + req.get("host")
     })
   });
 
   const RedisStore = connectRedis(session);
 
-  app.use(cors({
-    credentials: true,
-    origin: '*'
-  }))
+  app.use(
+    cors({
+      credentials: true,
+      origin: "*"
+    })
+  );
 
   app.use(
     session({
@@ -51,12 +50,11 @@ const DEFAULT_PORT = 8081;
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === "production",
         maxAge: COOKIE_MAX_AGE_LIMIT
-
       }
     })
-  )
+  );
 
   app.use("/images", express.static("images"));
 
