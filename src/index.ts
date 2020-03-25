@@ -12,12 +12,7 @@ const COOKIE_MAX_AGE_LIMIT = 1000 * 60 * 60 * 24 * 7 * 36; //7 years
 
 // TODO: we should find a way to store it secretly somewhere
 const AUTH_COOKIE_SECRET = "asdasda";
-<<<<<<< HEAD
 const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
-=======
-const DEFAULT_PORT = process.env.NODE_ENV === 'production' ? 8081 : 3000;
-
->>>>>>> master
 
 (async () => {
   const app = express();
