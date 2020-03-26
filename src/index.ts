@@ -25,6 +25,7 @@ const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
     context: ({ req, res }) => ({
       req,
       res,
+      session: req.session,
       /* url is used to serve the path to files */
       url: req.protocol + "://" + req.get("host")
     })
