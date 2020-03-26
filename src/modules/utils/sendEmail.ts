@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { appPassword } from "./picbyEmailPassword";
+import { appPassword } from "./picbyEmailPass";
 
 interface SendEmailArgs {
   email: string;
