@@ -24,7 +24,8 @@ export class RegisterResolver {
 
     await sendEmail({
       email,
-      url: await createAccountConfirmationUrl(user.id)
+      url: await createAccountConfirmationUrl(user.id),
+      subjectIndex: 0
     });
 
     return user;

@@ -26,7 +26,8 @@ export class ForgotPasswordResolver {
 
     await sendEmail({
       email,
-      url: `https://hungry-kilby-128f75.netlify.com/forgotPasswordForm/${token}`
+      url: `https://hungry-kilby-128f75.netlify.com/forgotPasswordForm/${token}`,
+      subjectIndex: 1
     });
     return true;
   }

@@ -4,9 +4,16 @@ import { appPassword } from "./picbyEmailPass";
 interface SendEmailArgs {
   email: string;
   url: string;
+  subjectIndex: number;
 }
 
-export async function sendEmail({ email, url }: SendEmailArgs) {
+const subjects = ["Potwierdź swoje konto Picby", "Zmień swoje hasło Picby"];
+const emailTextContent = [
+  "Aby potwierdzić swoje konto kliknij w link używając urządzenia mobilnego:",
+  "Aby zmienić hasło do swojego konta kliknij w link używając urządzenia mobilnego:"
+];
+
+export async function sendEmail({ email, url, subjectIndex }: SendEmailArgs) {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     secure: false,
@@ -24,8 +31,8 @@ export async function sendEmail({ email, url }: SendEmailArgs) {
   let HelperOptions = {
     from: '"Marcin" <picbyapp@gmail.com',
     to: email,
-    subject: "Potwierdź swoje konto Picby",
-    html: `Aby potwierdzić swoje konto kliknij w link używając urządzenia mobilnego: <a href="${url}">${url}</a>`
+    subject: subjects[subjectIndex],
+    html: `${emailTextContent[subjectIndex]} <a href="${url}">${url}</a>`
   };
 
   transporter.sendMail(HelperOptions, (error: any, info: any) => {
