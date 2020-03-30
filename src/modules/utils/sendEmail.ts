@@ -1,40 +1,46 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
+import { appPassword } from "./picbyEmailPass";
 
 interface SendEmailArgs {
   email: string;
   url: string;
+  subjectIndex: number;
 }
 
-// async..await is not allowed in global scope, must use a wrapper
-export async function sendEmail({ email, url }: SendEmailArgs) {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  const testAccount = await nodemailer.createTestAccount();
+const subjects = ["Potwierdź swoje konto Picby", "Zmień swoje hasło Picby"];
+const emailTextContent = [
+  "Aby potwierdzić swoje konto kliknij w link używając urządzenia mobilnego:",
+  "Aby zmienić hasło do swojego konta kliknij w link używając urządzenia mobilnego:"
+];
 
-  // create reusable transporter object using the default SMTP transport
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+export async function sendEmail({ email, url, subjectIndex }: SendEmailArgs) {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    secure: false,
+    port: 25,
     auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass // generated ethereal password
+      //contact Marcin for password
+      user: "picbyapp@gmail.com",
+      pass: appPassword
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: email, // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world?', // plain text body
-    html: `<a href="${url}">${url}</a>` // html body
+  let HelperOptions = {
+    from: '"Marcin" <picbyapp@gmail.com',
+    to: email,
+    subject: subjects[subjectIndex],
+    html: `${emailTextContent[subjectIndex]} <a href="${url}">${url}</a>`
+  };
+
+  transporter.sendMail(HelperOptions, (error: any, info: any) => {
+    if (error) {
+      console.log(error);
+      throw new Error();
+    }
+    console.log("The message was sent to `email`!");
+    console.log(info);
   });
-
-  console.log('Message sent: %s', info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-  // Preview only available when sending through an Ethereal account
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }

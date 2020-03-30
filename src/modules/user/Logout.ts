@@ -1,6 +1,6 @@
-import { Context } from 'src/types/Context';
-import { Ctx, Mutation, Resolver } from 'type-graphql';
-import { AUTH_COOKIE_NAME } from '../constants/cookies';
+import { Context } from "src/types/Context";
+import { Ctx, Mutation, Resolver } from "type-graphql";
+import { AUTH_COOKIE_NAME } from "../constants/cookies";
 
 @Resolver()
 export class LogoutResolver {
@@ -12,7 +12,7 @@ export class LogoutResolver {
           console.log(err);
           return rej(false);
         }
-        ctx.res.clearCookie(AUTH_COOKIE_NAME)
+        ctx.res.clearCookie(AUTH_COOKIE_NAME);
         return res(true);
       })
     );

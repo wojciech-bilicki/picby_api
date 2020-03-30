@@ -7,10 +7,20 @@ import { ForgotPasswordResolver } from "../modules/user/ForgotPassword";
 import { LoginResolver } from "../modules/user/Login";
 import { MeResolver } from "../modules/user/Me";
 import { RegisterResolver } from "../modules/user/Register";
+import { LogoutResolver } from "../modules/user/LogOut";
 
-
-export const createSchema = async () =>  await buildSchema({
-  resolvers: [EntryResolver, CatalogResolver, ChangePasswordResolver,ConfirmUserResolver, ForgotPasswordResolver, LoginResolver, MeResolver, RegisterResolver],
-  validate: true,
-
-});
+export const createSchema = async () =>
+  await buildSchema({
+    resolvers: [
+      EntryResolver,
+      LogoutResolver,
+      CatalogResolver,
+      ChangePasswordResolver,
+      ConfirmUserResolver,
+      ForgotPasswordResolver,
+      LoginResolver,
+      MeResolver,
+      RegisterResolver
+    ],
+    validate: true
+  });
