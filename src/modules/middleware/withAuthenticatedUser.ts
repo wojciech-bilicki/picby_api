@@ -8,6 +8,8 @@ export const withAuthenticatedUser: MiddlewareFn<Context> = async ({ context }, 
   }
 
   const userId = context.req.session.userId;
+
+  
   if(!userId) {
     throw new Error('no user id/not authenticated')
   }
