@@ -64,11 +64,13 @@ export class CatalogResolver {
       return true;
   }
 
+  
+  @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Catalog) 
   async updateCatalog(@Arg('data') data: UpdateCatalogInput, @Ctx() ctx: Context):Promise<Catalog> {
 
     const { user } = ctx;
-
+      console.error(user)
       if(!user) {
         throw new Error("User not available")
       }

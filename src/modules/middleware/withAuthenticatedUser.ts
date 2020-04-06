@@ -14,6 +14,7 @@ export const withAuthenticatedUser: MiddlewareFn<Context> = async ({ context }, 
     throw new Error('no user id/not authenticated')
   }
   
+  console.log(userId)
   context.user = await User.findOne(userId);
   return next();
 };
