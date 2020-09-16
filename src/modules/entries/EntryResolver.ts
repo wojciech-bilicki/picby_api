@@ -43,8 +43,9 @@ export class EntryResolver {
   }
 
   @Query(() => [Entry])
-  async getEntries() {
-    const entries = await Entry.find();
+  @UseMiddleware(withAuthenticatedUser)
+  async getEntries(@Ctx() {user}: Context) {
+    const entries = await Entry.find({where: {user }});
     return entries;
   }
 
@@ -53,7 +54,7 @@ export class EntryResolver {
   async removeEntry(@Arg('id') id: string, @Arg('catalogId') catalogId: string,  @Ctx() {user}: Context): Promise<Entry> {
 
       if(!user) {
-       throw new Error("NO user")
+        throw new Error("NO user")
       }
 
       const userCatalog = user.catalogs.find(catalog => catalog.id === catalogId);

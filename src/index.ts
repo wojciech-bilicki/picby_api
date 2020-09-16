@@ -36,7 +36,7 @@ const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
   app.use(
     cors({
       credentials: true,
-      origin: "*"
+      origin: "http://localhost:8081"
     })
   );
 

@@ -1,6 +1,7 @@
 import * as bcrypt from "bcryptjs";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
+import { ApiErrorCodes } from "../../utils/errorCodes";
 import { createAccountConfirmationUrl } from "../utils/createAccountConfirmationUrl";
 import { sendEmail } from "../utils/sendEmail";
 import { RegisterInput } from "./register/RegisterInput";
@@ -15,12 +16,18 @@ export class RegisterResolver {
   @Mutation(() => User)
   async register(
     @Arg("data") { email, password }: RegisterInput
-  ): Promise<User> {
+  ): Promise<User | null> {
     const hashedPassword = await bcrypt.hash(password, 12);
+
+    try {
     const user = await User.create({
       email,
       password: hashedPassword
     }).save();
+
+    if(!user) {
+      throw new Error('')
+    }
 
     await sendEmail({
       email,
@@ -29,5 +36,10 @@ export class RegisterResolver {
     });
 
     return user;
+  } catch (e) {
+    if(e.code === ApiErrorCodes.UniqueEntryConstraintErrorCode)
+      throw new Error('email_not_unique') 
+    }
+    return null;
   }
 }

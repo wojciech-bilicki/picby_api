@@ -4,3 +4,5 @@ database.sqlite
 pgdata
 .yarn
 images
+src\modules\utils\picbyEmailPass.ts
+src/modules/utils/picbyEmailPass.ts

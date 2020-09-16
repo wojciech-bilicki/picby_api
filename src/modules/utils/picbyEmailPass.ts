@@ -1,1 +1,1 @@
-export const appPassword = "contact marcin.jarowski@oke.pl";
+export const appPassword = "mlnztyjdxeppqxyz";

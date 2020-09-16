@@ -12,6 +12,12 @@ export class CatalogResolver {
   catalogs(
     @Ctx() {user}: Context
   ): Catalog[]  {
+    
+    const catalogs = user?.catalogs || []
+    if(catalogs.length) {
+      Promise.all(catalogs.map(catalog => catalog.entryCount))
+    }
+    console.log(catalogs)
     return user?.catalogs || [];
   }
 
@@ -84,3 +90,4 @@ export class CatalogResolver {
       return updatedCatalog;
   }
 }
+
