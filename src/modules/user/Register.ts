@@ -43,6 +43,7 @@ export class RegisterResolver {
     const { password, email } = data;
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    
     try {
       const user = await User.create({
         email,
