@@ -5,16 +5,16 @@ import { Field, InputType } from "type-graphql";
 export class CreateCatalogInput {
   @Field()
   @MaxLength(30)
-  name: string;
+  name!: string;
 }
 
 @InputType()
 export class ReadCatalogsInput {
   @Field({nullable: true})
-  skip: number;
+  skip?: number;
 
   @Field({nullable: true})
-  take: number
+  take?: number
 }
 
 
@@ -22,5 +22,5 @@ export class ReadCatalogsInput {
 export class UpdateCatalogInput extends CreateCatalogInput {
 
   @Field()
-  id: string
+  id!: string
 }

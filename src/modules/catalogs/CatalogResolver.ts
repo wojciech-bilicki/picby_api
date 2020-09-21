@@ -24,7 +24,7 @@ export class CatalogResolver {
   @UseMiddleware(withAuthenticatedUser)
   @Query(() => Catalog)
   catalog(@Arg('id') id: string, @Ctx() {user}: Context): Catalog  {
-    const catalog = user?.catalogs.find(catalog => catalog.id === id)
+    const catalog = user?.catalogs?.find(catalog => catalog.id === id)
     if(!catalog) {
       //TODO: check how the fuck should we actually handle errors in graphql
       throw new Error("Couldn't find catalog with given ID")
@@ -61,7 +61,7 @@ export class CatalogResolver {
         return false;
       }
 
-      const catalogToRemove = user?.catalogs.find(catalog => catalog.id === id);
+      const catalogToRemove = user?.catalogs?.find(catalog => catalog.id === id);
       if(!catalogToRemove) {
         throw new UserInputError("Catalog with given id not found")
       }
@@ -81,7 +81,7 @@ export class CatalogResolver {
         throw new Error("User not available")
       }
 
-      const catalogToUpdate = user?.catalogs.find(catalog => catalog.id === data.id);
+      const catalogToUpdate = user?.catalogs?.find(catalog => catalog.id === data.id);
       if(!catalogToUpdate) {
         throw new UserInputError("Catalog with given id not found")
       }

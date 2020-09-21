@@ -7,5 +7,5 @@ export class PasswordInput {
 
   @Field()
   @MinLength(5)
-  password: string;
+  password!: string;
 }

@@ -9,24 +9,24 @@ export class User extends BaseEntity {
   
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Field()
   @Column("text", {unique: true})
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column('bool', {default: false})
-  isConfirmed: boolean;
+  isConfirmed!: boolean;
 
   @Field(() =>[Catalog], {nullable: true})
   @OneToMany(() => Catalog, catalog => catalog.user, {eager: true})
-  catalogs: Catalog[];
+  catalogs?: Catalog[];
 
   @Field(() => [Entry], {nullable: true})
   @OneToMany(() => Entry, entry => entry.user)
-  entries: Entry[]
+  entries?: Entry[]
 
 }

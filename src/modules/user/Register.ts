@@ -1,45 +1,75 @@
-import * as bcrypt from "bcryptjs";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { User } from "../../entity/User";
-import { ApiErrorCodes } from "../../utils/errorCodes";
-import { createAccountConfirmationUrl } from "../utils/createAccountConfirmationUrl";
-import { sendEmail } from "../utils/sendEmail";
-import { RegisterInput } from "./register/RegisterInput";
+import * as bcrypt from 'bcryptjs';
+import {
+  Arg,
+  Field,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from 'type-graphql';
+import { User } from '../../entity/User';
+import { ApiErrorCodes } from '../../utils/errorCodes';
+import { createAccountConfirmationUrl } from '../utils/createAccountConfirmationUrl';
+import { sendEmail } from '../utils/sendEmail';
+import { RegisterInput } from './register/RegisterInput';
+
+@ObjectType()
+class FieldError {
+  @Field()
+  field!: string;
+
+  @Field()
+  message!: string;
+}
+
+@ObjectType()
+class RegisterResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+
+  @Field(() => User, { nullable: true })
+  user?: User;
+}
 
 @Resolver(User)
 export class RegisterResolver {
   @Query(() => String)
   hello() {
-    return "hello!";
+    return 'hello!';
   }
 
-  @Mutation(() => User)
-  async register(
-    @Arg("data") { email, password }: RegisterInput
-  ): Promise<User | null> {
+  @Mutation(() => RegisterResponse)
+  async register(@Arg('data') data: RegisterInput): Promise<RegisterResponse> {
+    const { password, email } = data;
     const hashedPassword = await bcrypt.hash(password, 12);
 
     try {
-    const user = await User.create({
-      email,
-      password: hashedPassword
-    }).save();
+      const user = await User.create({
+        email,
+        password: hashedPassword,
+      }).save();
 
-    if(!user) {
-      throw new Error('')
+      if (!user) {
+        return {errors: [{field: 'global', message: 'Could not create user'}]}
+      }
+
+      await sendEmail({
+        email,
+        url: await createAccountConfirmationUrl(user.id),
+        subjectIndex: 0,
+      });
+
+      return { user };
+    } catch (e) {
+      console.log(e);
+      if(e.code === ApiErrorCodes.UniqueEntryConstraintErrorCode)
+          return {
+            errors: [{field: 'email', message: 'Email already exists'}]
+          } 
+      }
+      return {
+        errors: undefined
+      }
     }
-
-    await sendEmail({
-      email,
-      url: await createAccountConfirmationUrl(user.id),
-      subjectIndex: 0
-    });
-
-    return user;
-  } catch (e) {
-    if(e.code === ApiErrorCodes.UniqueEntryConstraintErrorCode)
-      throw new Error('email_not_unique') 
-    }
-    return null;
   }
-}
+

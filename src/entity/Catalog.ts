@@ -9,20 +9,20 @@ export class Catalog extends BaseEntity {
   
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Field()
   @Column("text", {unique: true})
-  name: string;
+  name!: string;
 
   @Field(() => Int)
   entryCount() {
-    return this.entries.then(entries => entries.length)
+    return this.entries?.then(entries => entries.length)
   }
 
   @OneToMany(() => Entry, entry => entry.catalog)
-  entries: Promise<Entry[]>
+  entries?: Promise<Entry[]>
 
   @ManyToOne(() => User, user => user.catalogs)
-  user: User;
+  user!: User;
 }

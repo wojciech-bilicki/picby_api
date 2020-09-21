@@ -57,12 +57,12 @@ export class EntryResolver {
         throw new Error("NO user")
       }
 
-      const userCatalog = user.catalogs.find(catalog => catalog.id === catalogId);
+      const userCatalog = user.catalogs?.find(catalog => catalog.id === catalogId);
       if(!userCatalog) {
         throw new UserInputError(`No catalog for id: ${catalogId}`)
       }
       const catalogEntries = await userCatalog.entries;
-      const entryToRemove = catalogEntries.find(entry => entry.id === id);
+      const entryToRemove = catalogEntries?.find(entry => entry.id === id);
       if(!entryToRemove) {
         throw new UserInputError(`No entry for id: ${id}`)
       }
@@ -94,7 +94,7 @@ async updateEntry(
       }
       const catalog = await getCatalogById({user,catalogId: currentCatalogId})
       const catalogEntries =  await catalog.entries;
-      const updateEntry = catalogEntries.find(catalogEntry => catalogEntry.id = id)
+      const updateEntry = catalogEntries?.find(catalogEntry => catalogEntry.id = id)
       if(!updateEntry) {
 
         throw new UserInputError("Couldn't find entry to update");

@@ -10,14 +10,14 @@ export class Entry extends BaseEntity {
   
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Field()
   @Column("text")
-  desc: string;
+  desc!: string;
 
   @ManyToOne(() => Catalog, catalog => catalog.entries, {onDelete: 'CASCADE' })
-  catalog: Catalog;
+  catalog!: Catalog;
 
   @Field(() => String)
   imageUrl(@Ctx() context: Context): string {
@@ -25,5 +25,5 @@ export class Entry extends BaseEntity {
   }
 
   @ManyToOne(() => User, user => user.entries)
-  user: User
+  user!: User
 }

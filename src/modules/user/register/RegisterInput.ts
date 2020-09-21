@@ -8,6 +8,6 @@ export class RegisterInput extends PasswordInput {
   @Field()
   @IsEmail()
   @DoesEmailExist({message: "email already in use"})
-  email: string;
+  email!: string;
 
 }

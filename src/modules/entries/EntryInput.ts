@@ -4,16 +4,16 @@ import { Field, InputType } from "type-graphql";
 export class UpdateEntryInput {
 
   @Field()
-  id: string;
+  id!: string;
 
   @Field({nullable: true})
-  description: string;
+  description!: string;
 
   @Field({nullable: true})
-  currentCatalogId: string;
+  currentCatalogId!: string;
 
   @Field({nullable: true})
-  newCatalogId: string;
+  newCatalogId!: string;
 
 
 
@@ -22,8 +22,8 @@ export class UpdateEntryInput {
 @InputType() 
 export class RemoveEntryInput {
   @Field()
-  id: string;
+  id!: string;
 
   @Field()
-  catalogId: string;
+  catalogId!: string;
 }
