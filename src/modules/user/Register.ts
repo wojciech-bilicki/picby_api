@@ -50,7 +50,7 @@ export class RegisterResolver {
       }).save();
 
       if (!user) {
-        return {errors: [{field: 'global', message: 'Could not create user'}]}
+        return {errors: [{field: 'password', message: 'Could not create user'}, {field: 'email', message: 'Could not create user'} ]}
       }
 
       await sendEmail({

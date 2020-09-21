@@ -1,9 +1,9 @@
-import { ApolloServer, UserInputError } from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
 import express from "express";
 import session from "express-session";
-import { ArgumentValidationError } from "type-graphql";
+
 
 import { createTypeormConn } from "./createTypeOrmConnection";
 import { AUTH_COOKIE_NAME } from "./modules/constants/cookies";
@@ -30,20 +30,7 @@ const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
       session: req.session,
       /* url is used to serve the path to files */
       url: req.protocol + "://" + req.get("host")
-    }),
-    formatError: err => {
-
-      if(err.originalError instanceof ArgumentValidationError) {
-        const formattedErrors = err.originalError.validationErrors.map(validationError => ({
-          field: validationError.property,
-          message: validationError.constraints ? Object.keys(validationError.constraints).map(key => validationError.constraints![key]).join(" ,") : "Unknown error"
-        }))
-        return new UserInputError("User input error", {
-          errors: formattedErrors
-        })
-      }
-      return err;
-    }
+    })
   });
 
   const RedisStore = connectRedis(session);
