@@ -11,6 +11,7 @@ import { User } from '../../entity/User';
 import { ApiErrorCodes } from '../../utils/errorCodes';
 import { createAccountConfirmationUrl } from '../utils/createAccountConfirmationUrl';
 import { sendEmail } from '../utils/sendEmail';
+import { validateRegisterInput } from './register/register.inputValidator';
 import { RegisterInput } from './register/RegisterInput';
 
 @ObjectType()
@@ -40,6 +41,14 @@ export class RegisterResolver {
 
   @Mutation(() => RegisterResponse)
   async register(@Arg('data') data: RegisterInput): Promise<RegisterResponse> {
+    const validationErrors = validateRegisterInput(data);
+
+    if(validationErrors) {
+      return {
+        errors: validationErrors
+      }
+    }
+
     const { password, email } = data;
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -62,7 +71,7 @@ export class RegisterResolver {
 
       return { user };
     } catch (e) {
-      console.log(e);
+      console.log(e.code);
       if(e.code === ApiErrorCodes.UniqueEntryConstraintErrorCode)
           return {
             errors: [{field: 'email', message: 'Email already exists'}]
