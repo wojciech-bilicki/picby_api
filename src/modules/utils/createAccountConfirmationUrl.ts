@@ -13,5 +13,5 @@ export const createAccountConfirmationUrl = async (userId: string) => {
   );
 
   //TODO: set the proper URL for development and production
-  return `https://hungry-kilby-128f75.netlify.com/login?token=${confirmationToken}`;
+  return `http://localhost:3000/verify?token=${confirmationToken}`;
 };

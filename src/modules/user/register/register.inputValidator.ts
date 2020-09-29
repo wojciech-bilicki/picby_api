@@ -1,9 +1,9 @@
 import * as Yup from 'yup'
-import { RegisterInput } from './RegisterInput'
+import { AuthorizationInput } from '../AuthorizationInput'
 
 const MIN_PASSWORD_LENGTH = 5;
 
-export const validateRegisterInput = ({email, password}: RegisterInput) => {
+export const validateRegisterInput = ({email, password}: AuthorizationInput) => {
 
   if(!Yup.string().email().isValidSync(email)) {
     return [{
@@ -11,9 +11,6 @@ export const validateRegisterInput = ({email, password}: RegisterInput) => {
       message: 'Invalid email'
     }]
   }
-
-  console.log(password)
-  console.log(Yup.string().min(MIN_PASSWORD_LENGTH).isValidSync(password))
 
   if(!Yup.string().min(MIN_PASSWORD_LENGTH).isValidSync(password)) {
     return [{

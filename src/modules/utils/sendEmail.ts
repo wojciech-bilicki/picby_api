@@ -29,7 +29,7 @@ export async function sendEmail({ email, url, subjectIndex }: SendEmailArgs) {
   });
 
   let HelperOptions = {
-    from: '"Marcin" <picbyapp@gmail.com',
+    from: '"Marcin" <picbyapp@gmail.com>',
     to: email,
     subject: subjects[subjectIndex],
     html: `${emailTextContent[subjectIndex]} <a href="${url}">${url}</a>`

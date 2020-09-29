@@ -1,9 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import {
   Arg,
-  Field,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
 } from 'type-graphql';
@@ -12,25 +10,10 @@ import { ApiErrorCodes } from '../../utils/errorCodes';
 import { createAccountConfirmationUrl } from '../utils/createAccountConfirmationUrl';
 import { sendEmail } from '../utils/sendEmail';
 import { validateRegisterInput } from './register/register.inputValidator';
-import { RegisterInput } from './register/RegisterInput';
+import { AuthorizationInput } from './AuthorizationInput';
+import AuthorizationResponse from './AuthorizationResponse';
 
-@ObjectType()
-class FieldError {
-  @Field()
-  field!: string;
 
-  @Field()
-  message!: string;
-}
-
-@ObjectType()
-class RegisterResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-
-  @Field(() => User, { nullable: true })
-  user?: User;
-}
 
 @Resolver(User)
 export class RegisterResolver {
@@ -39,8 +22,8 @@ export class RegisterResolver {
     return 'hello!';
   }
 
-  @Mutation(() => RegisterResponse)
-  async register(@Arg('data') data: RegisterInput): Promise<RegisterResponse> {
+  @Mutation(() => AuthorizationResponse)
+  async register(@Arg('data') data: AuthorizationInput): Promise<AuthorizationResponse> {
     const validationErrors = validateRegisterInput(data);
 
     if(validationErrors) {

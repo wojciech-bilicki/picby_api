@@ -1,33 +1,53 @@
-import { AuthenticationError, ValidationError } from "apollo-server-core";
 import * as bcrypt from "bcryptjs";
 import { Context } from "src/types/Context";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
+import { AuthorizationInput } from "./AuthorizationInput";
+import AuthorizationResponse from "./AuthorizationResponse";
+
+
+const loginErrors =  [{
+  field: 'password',
+  message: 'Wrong password or email'
+}, {
+  field: 'email',
+  message: 'Wrong password or email'
+}]
 
 @Resolver(User)
 export class LoginResolver {
-  @Mutation(() => User, { nullable: true })
+  @Mutation(() => AuthorizationResponse)
   async login(
-    @Arg("email") email: string,
-    @Arg("password") password: string,
+    @Arg("data") {email, password}: AuthorizationInput,
     @Ctx() ctx: Context
-  ): Promise<User | null> {
+  ): Promise<AuthorizationResponse> {
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      throw new ValidationError("wrong_user_or_password");
+     return {
+       errors: loginErrors
+     }
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new ValidationError("wrong_user_or_password");
+      return  {
+        errors: loginErrors
+      }
     }
 
     if (!user.isConfirmed) {
-      throw new AuthenticationError("user_not_confirmed");
+      return {
+        errors: [{
+          field: 'general',
+          message: 'User is not confirmed'
+        }]
+      }
     }
 
     ctx.req.session!.userId = user.id;
 
-    return user;
+    return {
+      user
+    };
   }
 }
