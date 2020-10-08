@@ -1,5 +1,5 @@
-import { UserInputError } from 'apollo-server-express';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { getConnection } from 'typeorm';
 import { Catalog } from '../../entity/Catalog';
 import { Context } from '../../types/Context';
 import { withAuthenticatedUser } from '../middleware/withAuthenticatedUser';
@@ -9,63 +9,47 @@ import { CreateCatalogInput, UpdateCatalogInput } from './CatalogInput';
 export class CatalogResolver {
   @UseMiddleware(withAuthenticatedUser)
   @Query(() => [Catalog])
-  catalogs(
-    @Ctx() {user}: Context
-  ): Catalog[]  {
+  async catalogs(
+    @Ctx() {req}: Context
+  ): Promise<Catalog[]>  {
     
-    const catalogs = user?.catalogs || []
-    if(catalogs.length) {
-      Promise.all(catalogs.map(catalog => catalog.entryCount))
+    return await Catalog.find({user: req.session.userId})
     }
-    console.log(catalogs)
-    return user?.catalogs || [];
-  }
 
   @UseMiddleware(withAuthenticatedUser)
   @Query(() => Catalog)
-  catalog(@Arg('id') id: string, @Ctx() {user}: Context): Catalog  {
-    const catalog = user?.catalogs?.find(catalog => catalog.id === id)
+  async catalog(@Arg('id') id: string, @Ctx() {req}: Context): Promise<Catalog> {
+    const catalog = await Catalog.findOne({where: {id, user: req.session.userId }})
     if(!catalog) {
       //TODO: check how the fuck should we actually handle errors in graphql
       throw new Error("Couldn't find catalog with given ID")
     }
-    return catalog; 
+    return catalog;
   }
 
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Catalog, { nullable: true })
   async addCatalog(
     @Arg('newCatalogData') newCatalogData: CreateCatalogInput,
-    @Ctx() ctx: Context
+    @Ctx() {req}: Context
   ): Promise<Catalog | null> {
-    const {user} = ctx;
-    if(!user) {
-      throw new Error("There's no authenticated user")
-    }
-    const catalog = await Catalog.create(newCatalogData);
+  
+    return await Catalog.create({
+      ...newCatalogData,
+      user: req.session.userId
+    }).save()
 
-    catalog.user = user;
-    await catalog.save();
-
-    return catalog;
   }
 
 
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Boolean)
-  async removeCatalog(@Arg('id') id: string, @Ctx() ctx: Context):Promise<Boolean> {
+  async removeCatalog(@Arg('id') id: string, @Ctx() {req}: Context):Promise<Boolean> {
     //TODO: Throw some nice descriptive errors instead of returning false
-      const { user } = ctx;
+  
 
-      if(!user) {
-        return false;
-      }
-
-      const catalogToRemove = user?.catalogs?.find(catalog => catalog.id === id);
-      if(!catalogToRemove) {
-        throw new UserInputError("Catalog with given id not found")
-      }
-      await catalogToRemove.remove()
+       await Catalog.delete({id, user: req.session.userId })
+    
     
       return true;
   }
@@ -73,21 +57,21 @@ export class CatalogResolver {
   
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Catalog) 
-  async updateCatalog(@Arg('data') data: UpdateCatalogInput, @Ctx() ctx: Context):Promise<Catalog> {
+  async updateCatalog(@Arg('data') data: UpdateCatalogInput, @Ctx() {req}: Context):Promise<Catalog> {
 
-    const { user } = ctx;
-      console.error(user)
-      if(!user) {
-        throw new Error("User not available")
-      }
+    const result = await getConnection()
+      .createQueryBuilder()
+      .update(Catalog)
+      .set({name: data.name})
+      .where('id = :id abd "userId" := userId', {
+        id: data.id,
+        userId:req.session.userId 
 
-      const catalogToUpdate = user?.catalogs?.find(catalog => catalog.id === data.id);
-      if(!catalogToUpdate) {
-        throw new UserInputError("Catalog with given id not found")
-      }
-      catalogToUpdate.name = data.name;
-      const updatedCatalog = catalogToUpdate.save();
-      return updatedCatalog;
+      })
+      .returning("*")
+      .execute()
+
+      return result.raw[0]
   }
 }
 

@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { User } from 'src/entity/User';
 
 export interface Context {
-  req: Request,
+  req: Request & {session: Express.Session},
   res: Response
-  user?: User;
   url: string;
 }

@@ -17,9 +17,10 @@ export class Catalog extends BaseEntity {
 
   @Field(() => Int)
   entryCount() {
-    return this.entries?.then(entries => entries.length)
+    return 0
   }
 
+  @Field(() => [Entry])
   @OneToMany(() => Entry, entry => entry.catalog)
   entries?: Promise<Entry[]>
 
