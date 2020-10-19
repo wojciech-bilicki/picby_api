@@ -52,6 +52,13 @@ export class EntryResolver {
     const result = await Entry.createQueryBuilder().select().where({userId: req.session.userId}).getMany()
     return result;
   }
+
+  @Query(() => Entry, {nullable: true})
+  @UseMiddleware(withAuthenticatedUser)
+  async entry(@Arg('id') id:string, @Ctx() {req}: Context) {
+    return await Entry.findOne({where: {id, userId: req.session.userId}})
+  }
+
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Entry) 
   async removeEntry(@Arg('id') id: string, @Arg('catalogId') catalogId: string,  @Ctx() {req}: Context): Promise<Entry> {
