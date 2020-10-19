@@ -1,3 +1,4 @@
+import { ProfilePictureResolver } from "../ProfilePicture";
 import { buildSchema } from "type-graphql";
 import { CatalogResolver } from "../modules/catalogs/CatalogResolver";
 import { EntryResolver } from "../modules/entries/EntryResolver";
@@ -20,7 +21,9 @@ export const createSchema = async () =>
       ForgotPasswordResolver,
       LoginResolver,
       MeResolver,
-      RegisterResolver
+      RegisterResolver,
+      ProfilePictureResolver
+      
     ],
     validate: true
   });

@@ -1,3 +1,4 @@
+import { AuthenticationError } from "apollo-server";
 import { Context } from "src/types/Context";
 import { MiddlewareFn } from "type-graphql";
 
@@ -10,7 +11,7 @@ export const withAuthenticatedUser: MiddlewareFn<Context> = async ({ context }, 
 
   
   if(!userId) {
-    throw new Error('no user id/not authenticated')
+    throw new AuthenticationError('no user id/not authenticated')
   }
 
   return next();

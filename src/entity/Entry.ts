@@ -1,6 +1,5 @@
-import { Ctx, Field, ID, ObjectType } from "type-graphql";
+import {  Field, ID, ObjectType } from "type-graphql";
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Context } from "../types/Context";
 import { Catalog } from "./Catalog";
 import { User } from "./User";
 
@@ -16,13 +15,20 @@ export class Entry extends BaseEntity {
   @Column("text")
   desc!: string;
 
+  @Field()
+  @Column()
+  catalogId!: string;
+
   @ManyToOne(() => Catalog, catalog => catalog.entries, {onDelete: 'CASCADE' })
   catalog!: Catalog;
 
-  @Field(() => String)
-  imageUrl(@Ctx() context: Context): string {
-    return `${context.url}/images/${this.catalog.id}/${this.id}.png`;
-  }
+  @Field()
+  @Column('text')
+  imageUrl!: string
+
+  @Field()
+  @Column()
+  userId!: string;
 
   @ManyToOne(() => User, user => user.entries)
   user!: User

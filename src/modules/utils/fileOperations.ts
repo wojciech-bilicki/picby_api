@@ -9,7 +9,7 @@ interface SaveImageArgs {
   catalogId: string;
 }
 
-const getPathToCatalog = (catalogId: string) => path.join(__dirname,`../../../images/${catalogId}/`)
+const getPathToCatalog = (catalogId: string) => path.join(__dirname,`/../../../images/${catalogId}/`)
 
 const getPathToFile = (catalogId: string, entryId: string) => path.join(getPathToCatalog(catalogId), `${entryId}.png`);
 

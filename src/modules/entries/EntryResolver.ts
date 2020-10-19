@@ -1,5 +1,9 @@
-import { UserInputError, GraphQLUpload } from "apollo-server-express";
+import { UserInputError } from "apollo-server-express";
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import { FileUpload } from "graphql-upload";
+import { GraphQLUpload} from 'apollo-server'
+
+
 import { User } from "../../entity/User";
 import { Context } from "../../types/Context";
 import { Entry } from "../../entity/Entry";
@@ -7,14 +11,8 @@ import { withAuthenticatedUser } from "../middleware/withAuthenticatedUser";
 import { removeImage, saveImage } from "../utils/fileOperations";
 import { getCatalogById } from "./entries.utils";
 import { UpdateEntryInput } from "./EntryInput";
-import { ReadStream } from "typeorm/platform/PlatformTools";
-
-export interface FileUpload {
-  filename: string;
-  mimetype: string;
-  encoding: string;
-  createReadStream(): ReadStream;
-}
+import { v4 as uuidv4 } from 'uuid';
+;
 
 @Resolver()
 export class EntryResolver {
@@ -22,42 +20,38 @@ export class EntryResolver {
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Boolean)
   async addEntry(
-    @Arg("photo", ()  => GraphQLUpload!) photo: FileUpload,
+    @Arg("photo", ()  => GraphQLUpload!, {nullable: true}) photo: FileUpload,
     @Arg("description") description: string,
-    @Ctx() {req}: Context,
-    @Arg("catalogId", {nullable: true}) catalogId?: string,
+    @Arg("catalogId", {nullable: true}) catalogId: string,
+    @Ctx() {req, url}: Context
   ):Promise<boolean> {
+    
 
-    if(!req.session.userId) {
-      return false
-    }
+    const entryId = uuidv4()
+    
+    const entry = await Entry.create({ 
+      id: entryId,
+      desc: description,
+      catalogId: catalogId,
+      userId: req.session.userId,
+      imageUrl:   `${url}/images/${catalogId}/${entryId}.png`
 
-    const catalog = await getCatalogById({catalogId, user: req.session.userId})
-    const entry = await Entry.create({ desc: description}).save();
+     }).save();
+  
     const { createReadStream } = await photo;
-    // const catalog = await Catalog.findOneOrFail(catalogId)
-    console.log(photo)
-    const result = await saveImage({createReadStream, id: entry.id, catalogId: catalog.id})
-    if(result) {
-      let catalogEntries = await catalog.entries;
-      if(catalogEntries ) {
-        catalogEntries.push(entry); 
-      } else {
-        catalogEntries = [entry];
-      }
-      await catalog.save()
-    }
+   
+    const result = await saveImage({createReadStream, id: entry.id, catalogId })
+     
     return result;
   }
 
   @Query(() => [Entry])
   @UseMiddleware(withAuthenticatedUser)
   async entries(@Ctx() {req}: Context) {
-    const userId = req.session.userId
-    const entries = await Entry.find({where: { user: userId }});
-    return entries;
-  }
 
+    const result = await Entry.createQueryBuilder().select().where({userId: req.session.userId}).getMany()
+    return result;
+  }
   @UseMiddleware(withAuthenticatedUser)
   @Mutation(() => Entry) 
   async removeEntry(@Arg('id') id: string, @Arg('catalogId') catalogId: string,  @Ctx() {req}: Context): Promise<Entry> {

@@ -4,7 +4,6 @@ import cors from "cors";
 import express from "express";
 import session from "express-session";
 
-
 import { createTypeormConn } from "./createTypeOrmConnection";
 import { AUTH_COOKIE_NAME } from "./modules/constants/cookies";
 import { redis } from "./redis";
@@ -17,23 +16,9 @@ const AUTH_COOKIE_SECRET = "asdasda";
 const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
 
 (async () => {
-  const app = express();
-
-  await createTypeormConn();
-  const apolloServer = new ApolloServer({
-    introspection: true,
-    playground: true,
-    schema: await createSchema(),
-    context: ({ req, res }) => ({
-      req,
-      res,
-      session: req.session,
-      /* url is used to serve the path to files */
-      url: req.protocol + "://" + req.get("host")
-    })
-  });
-
   const RedisStore = connectRedis(session);
+  const app = express();
+  await createTypeormConn();
 
   app.use(
     cors({
@@ -59,8 +44,19 @@ const DEFAULT_PORT = process.env.NODE_ENV === "production" ? 8081 : 8090;
     })
   );
 
-  app.use("/images", express.static("images"));
-
+ app.use("/images", express.static("images"));
+ const apolloServer = new ApolloServer({
+    introspection: true,
+    playground: true,
+    schema: await createSchema(),
+    context: ({ req, res }) => ({
+      req,
+      res,
+      session: req.session,
+      /* url is used to serve the path to files */
+      url: req.protocol + "://" + req.get("host")
+    })
+  });
   apolloServer.applyMiddleware({ app, cors: false });
   const port = process.env.PORT || DEFAULT_PORT;
   app.listen(port, async () => {
