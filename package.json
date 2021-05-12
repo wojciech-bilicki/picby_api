@@ -34,7 +34,7 @@
     "graphql": "^15.3.0",
     "ioredis": "^4.17.3",
     "jest": "^26.4.2",
-    "nodemailer": "^6.4.11",
+    "nodemailer": "^6.4.16",
     "npm-force-resolutions": "0.0.3",
     "pg": "^8.3.3",
     "reflect-metadata": "^0.1.13",
