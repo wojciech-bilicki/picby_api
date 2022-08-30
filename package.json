@@ -29,7 +29,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "file-type": "^15.0.1",
+    "file-type": "^16.5.4",
     "fs-capacitor": "^6.2.0",
     "graphql": "^15.3.0",
     "ioredis": "^4.17.3",
