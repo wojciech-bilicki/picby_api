@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@types/yup": "^0.29.7",
-    "apollo-server": "2.18.1",
+    "apollo-server": "2.25.4",
     "apollo-server-express": "^2.18.1",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.12.2",
