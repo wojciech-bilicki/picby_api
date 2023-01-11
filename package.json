@@ -24,7 +24,7 @@
     "apollo-server": "2.18.1",
     "apollo-server-express": "^2.18.1",
     "bcryptjs": "^2.4.3",
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.14.0",
     "connect-redis": "^5.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
